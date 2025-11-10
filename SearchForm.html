@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пошук інвентаря</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .navigation {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .navigation a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .navigation a:hover {
+            text-decoration: underline;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Пошук інвентаря</h1>
+        
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="id">Серійний номер (ID):</label>
+                <input type="number" id="id" name="id" required min="1" placeholder="Введіть ID предмета...">
+            </div>
+            
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="has_photo" name="has_photo">
+                    <label for="has_photo">Додати посилання на фото до опису</label>
+                </div>
+            </div>
+            
+            <button type="submit">Знайти предмет</button>
+        </form>
+        
+        <div id="result"></div>
+        
+        <div class="navigation">
+            <a href="/RegisterForm.html">Реєстрація інвентаря</a> |
+            <a href="/inventory">Переглянути всі предмети</a> |
+            <a href="/docs">API Документація</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const id = document.getElementById('id').value;
+            const hasPhoto = document.getElementById('has_photo').checked;
+            
+            formData.append('id', id);
+            if (hasPhoto) {
+                formData.append('has_photo', 'on');
+            }
+            
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('result');
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>Знайдено предмет:</h3>
+                            <p><strong>ID:</strong> ${data.id}</p>
+                            <p><strong>Назва:</strong> ${data.inventory_name}</p>
+                            <p><strong>Опис:</strong> ${data.description || 'Немає опису'}</p>
+                            ${data.photo_url ? `<p><strong>Фото:</strong> <a href="${data.photo_url}" target="_blank">Переглянути</a></p>` : '<p><strong>Фото:</strong> Немає</p>'}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <h3>Помилка:</h3>
+                            <p>${data.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <div class="result error">
+                        <h3>Помилка:</h3>
+                        <p>Не вдалося виконати пошук. Перевірте з'єднання з сервером.</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
