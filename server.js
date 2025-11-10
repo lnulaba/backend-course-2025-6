@@ -457,6 +457,36 @@ app.post('/search', (req, res) => {
   res.json(result);
 });
 
+/**
+ * @swagger
+ * /RegisterForm.html:
+ *   get:
+ *     summary: Registration form
+ *     description: Web form for registering new inventory items
+ *     responses:
+ *       200:
+ *         description: HTML registration form
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ */
+
+/**
+ * @swagger
+ * /SearchForm.html:
+ *   get:
+ *     summary: Search form
+ *     description: Web form for searching inventory items by ID
+ *     responses:
+ *       200:
+ *         description: HTML search form
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ */
+
 // Обробка неіснуючих методів
 app.all('*', (req, res) => {
   res.status(405).json({ error: 'Method not allowed' });
