@@ -125,19 +125,22 @@
         document.getElementById('searchForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const formData = new FormData();
             const id = document.getElementById('id').value;
             const hasPhoto = document.getElementById('has_photo').checked;
             
-            formData.append('id', id);
+            const params = new URLSearchParams();
+            params.append('id', id);
             if (hasPhoto) {
-                formData.append('has_photo', 'on');
+                params.append('has_photo', 'on');
             }
             
             try {
                 const response = await fetch('/search', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: params.toString()
                 });
                 
                 const data = await response.json();
