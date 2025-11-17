@@ -1,0 +1,17 @@
+# Dependencies
+/node_modules
+/cache
+
+# Misc
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Extra files
+Dockerfile
+README.md
+LAB_REPORT.md
+GITHUB_README.md
+test_api.sh
+verify_lab.sh
